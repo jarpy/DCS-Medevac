@@ -836,7 +836,7 @@ function medevac.getClosestGroupName(_heli, _returnDistance)
 
     local _side = _heli:getCoalition()
 
-    local _closetGroup = nil
+    local _closestGroup = nil
     local _shortestDistance = -1
     local _distance = 0
 
@@ -853,21 +853,21 @@ function medevac.getClosestGroupName(_heli, _returnDistance)
                 if _distance ~= nil and (_shortestDistance == -1 or _distance < _shortestDistance) then
 
                     _shortestDistance = _distance
-                    _closetGroup = _woundedName
+                    _closestGroup = _woundedName
                 end
             end
         end
     end
 
     if _returnDistance then
-        return { groupName = _closetGroup, distance = _shortestDistance }
+        return { groupName = _closestGroup, distance = _shortestDistance }
     else
-        return _closetGroup
+        return _closestGroup
     end
 end
 
 -- check if a wounded group should move to the current heli
--- if the current group is NOT the closet to the current Heli then
+-- if the current group is NOT the closest to the current Heli then
 -- they shouldn't move as a closer group will
 function medevac.woundedShouldMoveToHeli(_woundedGroupName, _woundedGroup, _heliName, _heliUnit, _distance)
 
@@ -918,9 +918,9 @@ function medevac.woundedShouldMoveToHeli(_woundedGroupName, _woundedGroup, _heli
     local _alreadyMoving = medevac.woundedMoving[_woundedGroupName] ~= nil
     if not _alreadyMoving then
 
-        local _closetGroup = medevac.getClosestGroupName(_heliUnit)
+        local _closestGroup = medevac.getClosestGroupName(_heliUnit)
 
-        if _closetGroup == nil or _woundedGroupName == _closetGroup then
+        if _closestGroup == nil or _woundedGroupName == _closestGroup then
 
             -- moving to you!
             medevac.orderGroupToMoveToPoint(_woundedLeader, _heliUnit:getPoint())
@@ -935,8 +935,8 @@ function medevac.woundedShouldMoveToHeli(_woundedGroupName, _woundedGroup, _heli
         else
             --- a different group will move to you later on in the scheduled tasks that is closer
 
-            --  if _closetGroup ~= nil then
-            -- env.info("Group Not the closet".._woundedGroupName.." this one was ".._closetGroup)
+            --  if _closestGroup ~= nil then
+            -- env.info("Group Not the closest".._woundedGroupName.." this one was ".._closestGroup)
             --  end
         end
     end
@@ -974,7 +974,7 @@ function medevac.getBleedTime(_heli)
         _mashes = medevac.redmash
     end
 
-    local _mashDistance = medevac.getClosetMASH(_heli)
+    local _mashDistance = medevac.getClosestMASH(_heli)
 
     --mash down!
     if _mashDistance == -1 then
@@ -1040,7 +1040,7 @@ function medevac.scheduledSARFlight(_args)
             return
         end
 
-        local _dist = medevac.getClosetMASH(_heliUnit)
+        local _dist = medevac.getClosestMASH(_heliUnit)
 
         if _dist == -1 then
 
@@ -1129,7 +1129,7 @@ function medevac.scheduledSARFlight(_args)
     end
 end
 
-function medevac.getClosetMASH(_heli)
+function medevac.getClosestMASH(_heli)
 
     local _mashes = medevac.bluemash
 
@@ -1340,23 +1340,23 @@ function medevac.signalFlare(_unitName)
         return
     end
 
-    local _closet = medevac.getClosestGroupName(_heli, true)
+    local _closest = medevac.getClosestGroupName(_heli, true)
 
-    if _closet ~= nil and _closet.groupName ~= nil and _closet.distance < 1000.0 then
+    if _closest ~= nil and _closest.groupName ~= nil and _closest.distance < 1000.0 then
 
-        local _woundedGroup = medevac.getWoundedGroup(_closet.groupName)
+        local _woundedGroup = medevac.getWoundedGroup(_closest.groupName)
 
         local _coordinatesText = medevac.getPositionOfWounded(_woundedGroup[1]:getGroup())
 
-        local _msg = string.format("%s at %s", _closet.groupName, _coordinatesText)
+        local _msg = string.format("%s at %s", _closest.groupName, _coordinatesText)
 
-        if medevac.radioBeacons[_closet.groupName] then
-            _msg = string.format("%s ADF %.2f KHz", _msg, medevac.radioBeacons[_closet.groupName]/1000)
+        if medevac.radioBeacons[_closest.groupName] then
+            _msg = string.format("%s ADF %.2f KHz", _msg, medevac.radioBeacons[_closest.groupName]/1000)
         end
 
         local _clockDir = medevac.getClockDirection(_heli, _woundedGroup[1])
 
-        local _msg = string.format("%s\n%.0fM from you - Popping Signal Flare at your %s o'clock ",_msg,  _closet.distance, _clockDir)
+        local _msg = string.format("%s\n%.0fM from you - Popping Signal Flare at your %s o'clock ",_msg,  _closest.distance, _clockDir)
         medevac.displayMessageToSAR(_heli, _msg, 20)
 
         trigger.action.signalFlare(_woundedGroup[1]:getPoint(), 1, 0)
