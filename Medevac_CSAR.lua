@@ -832,7 +832,7 @@ function medevac.checkGroupNotKIA(_woundedGroup, _woundedGroupName, _heliUnit, _
 end
 
 -- get the closest wounded group to the helicopter
-function medevac.getClosetGroupName(_heli, _returnDistance)
+function medevac.getClosestGroupName(_heli, _returnDistance)
 
     local _side = _heli:getCoalition()
 
@@ -918,7 +918,7 @@ function medevac.woundedShouldMoveToHeli(_woundedGroupName, _woundedGroup, _heli
     local _alreadyMoving = medevac.woundedMoving[_woundedGroupName] ~= nil
     if not _alreadyMoving then
 
-        local _closetGroup = medevac.getClosetGroupName(_heliUnit)
+        local _closetGroup = medevac.getClosestGroupName(_heliUnit)
 
         if _closetGroup == nil or _woundedGroupName == _closetGroup then
 
@@ -1340,7 +1340,7 @@ function medevac.signalFlare(_unitName)
         return
     end
 
-    local _closet = medevac.getClosetGroupName(_heli, true)
+    local _closet = medevac.getClosestGroupName(_heli, true)
 
     if _closet ~= nil and _closet.groupName ~= nil and _closet.distance < 1000.0 then
 
